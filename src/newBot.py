@@ -45,7 +45,7 @@ class newBot(Bot):
         col_status = state.col_status
         node=DotsAndBoxes()
         node.updateMove(row_status, col_status)
-        moveResult = self.alphaBetaAlgorithm(node,6,True,True, (0,0),-10,10)[0]
+        moveResult = self.alphaBetaAlgorithm(node,True,True, 6,(0,0),-10,10)[0]
         if moveResult[0]%2==0:
             return GameAction('row', [moveResult[1], moveResult[0]//2])
         else:
