@@ -5,7 +5,7 @@ from GameState import GameState
 import numpy as np
 
 class newBot(Bot):
-    def alphaBetaAlgorithm(self, node, depth, alpha, beta, isMax, playerTurn, move):
+    def alphaBetaAlgorithm(self, node, playerTurn, isMax, depth, move, alpha, beta):
         #algoritma alpha beta pruning
         if len(node.listMove) == 0 or depth == 0:
             return [move, node.skor[playerTurn] - node.skor[not playerTurn]] # base case
@@ -15,11 +15,11 @@ class newBot(Bot):
                 bestMove =  ()
                 for x, y in node.listMove:
                     currentNode = node.copy() #buat node baru untuk ditelusuri
-                    turn = currentNode.move(x, y, playerTurn)
-                    result = self.alphaBetaAlgorithm(currentNode, depth - 1, alpha, beta, turn, playerTurn, (x, y))
+                    turn = currentNode.move(playerTurn, x, y)
+                    result = self.alphaBetaAlgorithm(currentNode, playerTurn, turn, depth - 1, (x, y), alpha, beta)
                     if result[1] > bestScore:
-                        bestMove = (x, y)
                         bestScore = result[1]
+                        bestMove = (x, y)
                     alpha = max(bestScore, alpha)
                     if beta <= alpha:
                         break
@@ -29,11 +29,11 @@ class newBot(Bot):
                 worstMove = ()
                 for x, y in node.listMove:
                     currentNode = node.copy()
-                    turn = currentNode.move(x, y, not playerTurn)
-                    result = self.alphaBetaAlgorithm(currentNode, depth - 1, alpha, beta, not turn, playerTurn, (x, y))
+                    turn = currentNode.move(not playerTurn, x, y)
+                    result = self.alphaBetaAlgorithm(currentNode, playerTurn, not turn, depth - 1, (x, y), alpha, beta)
                     if result[1] < worstScore:
-                        worstMove = (x, y)
                         worstScore = result[1]
+                        worstMove = (x, y)
                     beta = min(beta, worstScore)
                     if beta <= alpha:
                         break
@@ -43,12 +43,12 @@ class newBot(Bot):
         #GameAction yang akan dikirimkan ke permainan
         row_status = state.row_status
         col_status = state.col_status
-        dab=DotsAndBoxes()
-        dab.updateMove(row_status, col_status)
-        move = self.alphaBetaAlgorithm(dab,6,-10,10,True,True,(0,0))[0]
-        if move[0]%2==0:
-            return GameAction('row', [move[1], move[0]//2])
+        node=DotsAndBoxes()
+        node.updateMove(row_status, col_status)
+        moveResult = self.alphaBetaAlgorithm(node,6,True,True, (0,0),-10,10)[0]
+        if moveResult[0]%2==0:
+            return GameAction('row', [moveResult[1], moveResult[0]//2])
         else:
-            return GameAction('col', [move[1], move[0]//2])
+            return GameAction('col', [moveResult[1], moveResult[0]//2])
 
     
