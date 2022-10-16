@@ -2,14 +2,20 @@ from Bot import Bot
 from AlphaBetaNode import AlphaBetaNode
 from GameAction import GameAction
 from GameState import GameState
+import numpy as np
 
 
 class AlphaBetaBot(Bot):
     def get_action(self, state: GameState) -> GameAction:
-        # GameAction yang akan dikirimkan ke permainan
         node = AlphaBetaNode()
         node.update(state.row_status, state.col_status)
-        moveResult = self.alphaBetaAlgorithm(node, True, 7, (0, 0), -10, 10)[0]
+        countRowAndColNotMarked = 24 - np.count_nonzero(state.row_status == 1) - np.count_nonzero(state.col_status == 1)
+        maxNode, depth = 1, 0
+        while (maxNode<4037880 and countRowAndColNotMarked>0): # batasi maxNode yang dibuat sampai 4037880
+            maxNode *=countRowAndColNotMarked
+            depth += 1
+            countRowAndColNotMarked -= 1
+        moveResult = self.alphaBetaAlgorithm(node, True, depth, (0, 0), -10, 10)[0]
         if moveResult[0] % 2 == 0:
             return GameAction('row', [moveResult[1], moveResult[0]//2])
         else:

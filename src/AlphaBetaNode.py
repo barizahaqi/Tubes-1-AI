@@ -1,3 +1,6 @@
+import random
+
+
 class AlphaBetaNode:
     # class untuk node pohon alpha beta pruning
     def __init__(self):
@@ -24,6 +27,7 @@ class AlphaBetaNode:
                         self.listMove.append((i, j))
                     j += 1
             j = 0
+        random.shuffle(self.listMove)
 
     def move(self, playerTurn, x, y):
         # menambah poin dan mengembalikan true jika ada kotak yang terbentuk
