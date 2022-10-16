@@ -1,40 +1,27 @@
-class DotsAndBoxes:
+class AlphaBetaNode:
     #class untuk membuat game Dots and Boxes yang dimainkan secara otomatis untuk pohon algoritma
     def __init__(self):
         self.board = [None] * 24 # total 24 buah garis
-        self.listMove = self.makeMove() #move yang tersedia
+        self.listMove = [] #move yang tersedia
         self.skor = [0, 0] # skor yang didapat dari banyaknya kotak yang dibuat. skor[0] = lawan, skor[1] = playerTurn
 
-    def makeMove(self):
-        #membuat list move board 4x4
-        listMove, j = [], 0
-        for i in range(7):
-            if i%2==0: #horizontal
-                while (j<3):
-                    listMove.append((i, j))
-                    j+=1
-            else: #vertical
-                while (j<4):
-                    listMove.append((i, j))
-                    j+=1
-            j=0
-        return listMove
-
-    def updateMove(self, row, col):
+    def update(self, row, col):
         #menyesuaikan variabel listMove dan board dengan list move yang tersedia pada game yang sedang berlangsung
         j=0
         for i in range(7):
             if i%2==0: #horizontal
                 while (j<3):
                     if (row[i//2][j] == 1):
-                        self.listMove.remove((i, j))
                         self.board[i*4-i//2 + j] = True
+                    else:
+                        self.listMove.append((i, j))
                     j+=1
             else: #vertical
                 while (j<4):
                     if (col[i//2][j] == 1):
-                        self.listMove.remove((i, j))
                         self.board[i*4 -(i-1)//2 + j - 1] = True
+                    else:
+                        self.listMove.append((i, j))
                     j+=1
             j=0
     
@@ -73,7 +60,7 @@ class DotsAndBoxes:
 
     def copy(self):
         #membuat copy dari objek sendiri
-        newNode = DotsAndBoxes()
+        newNode = AlphaBetaNode()
         newNode.board = self.board[:]
         newNode.listMove = self.listMove[:]
         newNode.skor = self.skor[:]

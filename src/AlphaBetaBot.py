@@ -1,10 +1,10 @@
 from Bot import Bot
-from DotsAndBoxes import DotsAndBoxes
+from AlphaBetaNode import AlphaBetaNode
 from GameAction import GameAction
 from GameState import GameState
-import numpy as np
+import copy
 
-class newBot(Bot):
+class AlphaBetaBot(Bot):
     def alphaBetaAlgorithm(self, node, playerTurn, isMax, depth, move, alpha, beta):
         #algoritma alpha beta pruning
         if len(node.listMove) == 0 or depth == 0:
@@ -28,7 +28,7 @@ class newBot(Bot):
                 worstScore = 10
                 worstMove = ()
                 for x, y in node.listMove:
-                    currentNode = node.copy()
+                    currentNode = node.copy() 
                     turn = currentNode.move(not playerTurn, x, y)
                     result = self.alphaBetaAlgorithm(currentNode, playerTurn, not turn, depth - 1, (x, y), alpha, beta)
                     if result[1] < worstScore:
@@ -43,8 +43,8 @@ class newBot(Bot):
         #GameAction yang akan dikirimkan ke permainan
         row_status = state.row_status
         col_status = state.col_status
-        node=DotsAndBoxes()
-        node.updateMove(row_status, col_status)
+        node=AlphaBetaNode()
+        node.update(row_status, col_status)
         moveResult = self.alphaBetaAlgorithm(node,True,True, 6,(0,0),-10,10)[0]
         if moveResult[0]%2==0:
             return GameAction('row', [moveResult[1], moveResult[0]//2])
