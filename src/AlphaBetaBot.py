@@ -3,13 +3,16 @@ from AlphaBetaNode import AlphaBetaNode
 from GameAction import GameAction
 from GameState import GameState
 import numpy as np
-
+import time
 
 class AlphaBetaBot(Bot):
+    global start_time
+    start_time = time.time()
     def get_action(self, state: GameState) -> GameAction:
         """
         menentukan aksi yang akan diambil bot
         """
+        global start_time
         node = AlphaBetaNode()
         node.update(state.row_status, state.col_status)
         countRowAndColNotMarked = 24 - \
@@ -17,10 +20,14 @@ class AlphaBetaBot(Bot):
             np.count_nonzero(state.col_status == 1)
         maxNode, depth = 1, 0
         # batasi maxNode yang dibuat sampai 4037880
-        while (maxNode < 4037880 and countRowAndColNotMarked > 0):
+        while (True):
             maxNode *= countRowAndColNotMarked
             depth += 1
             countRowAndColNotMarked -= 1
+            if (maxNode > 4000000 or countRowAndColNotMarked < 0):
+                depth -=1
+                break
+        start_time = time.time()
         moveResult = self.alphaBetaAlgorithm(
             node, True, depth, (0, 0), -10, 10)[0]
         if moveResult[0] % 2 == 0:
@@ -32,14 +39,16 @@ class AlphaBetaBot(Bot):
         """
         algoritma alpha beta pruning
         """
-        if depth == 0 or len(node.listMove) == 0:
+        global start_time
+        end_time = time.time() - start_time
+        if depth == 0 or len(node.listMove) == 0 or end_time > 4.5:
             return [move, node.score[True] - node.score[False]]
         else:
             move = ()
             if playerTurn:  # jika true akan mencari nilai maksimum
                 bestScore = -9
                 for x, y in node.listMove:
-                    currentNode = node.copy()  # buat node baru untuk ditelusuri
+                    currentNode = node.copy() 
                     turn = currentNode.move(playerTurn, x, y)
                     result = self.alphaBetaAlgorithm(
                         currentNode, turn, depth - 1, (x, y), alpha, beta)
