@@ -11,7 +11,6 @@ class AlphaBetaBot(Bot):
     Bot untuk bermain dengan algoritma Minimax alpha-beta pruning
     """
     global start_time
-    start_time = time.time()
 
     def get_action(self, state: GameState) -> GameAction:
         """
