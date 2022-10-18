@@ -3,23 +3,34 @@ import random
 
 class AlphaBetaNode:
     """
-    class untuk node pohon Alpha Beta Pruning
+    Kelas untuk node pencarian Minimax alpha-beta pruning
     """
 
     def __init__(self):
-        self.board = [None] * 24  # total 24 buah garis
-        self.listMove = []  # move yang tersedia
-        # score yang didapat dari banyaknya kotak yang dibuat. score[0] = lawan, score[1] = playerTurn
+        """
+        self.board: List[]
+            list yang berisi 24 boolean yang menandakan apakah terdapat garis pada posisi tersebut
+
+        self.listMove: List[]
+            list yang berisi tuple yang menandakan semua posisi move yang tersedia
+
+        self.score: List[]
+            list yang berisi skor pemain. score[1] untuk pemain (playerTurn), score[0] untuk musuh
+        """
+        self.board = [None] * 24
+        self.listMove = []
         self.score = [0, 0]
 
     def update(self, row, col):
-        # menyesuaikan variabel listMove dan board dengan list move yang tersedia pada game yang sedang berlangsung
+        """
+        Menyesuaikan variabel listMove dan board dengan list move yang tersedia pada game yang sedang berlangsung
+        """
         j = 0
         for i in range(7):
             if i % 2 == 0:  # horizontal
                 while (j < 3):
                     if (row[i//2][j] == 1):
-                        self.board[i*4-i//2 + j] = True
+                        self.board[i*4 - i//2 + j] = True
                     else:
                         self.listMove.append((i, j))
                     j += 1
@@ -33,9 +44,9 @@ class AlphaBetaNode:
             j = 0
         random.shuffle(self.listMove)
 
-    def move(self, playerTurn, x, y):
+    def move(self, playerTurn: bool, x: int, y: int) -> bool:
         """
-        menambah poin dan mengembalikan true jika ada kotak yang terbentuk
+        Menambah skor pemain serta mengembalikan true jika ada kotak yang terbentuk
         """
         self.listMove.remove((x, y))
         if x % 2 == 0:  # horizontal
@@ -62,9 +73,8 @@ class AlphaBetaNode:
 
     def copy(self):
         """
-        membuat copy dari objek sendiri
+        Membuat copy dari objek sendiri
         """
-
         newNode = AlphaBetaNode()
         newNode.board = self.board[:]
         newNode.listMove = self.listMove[:]

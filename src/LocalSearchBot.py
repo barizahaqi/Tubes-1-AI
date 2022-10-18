@@ -12,24 +12,23 @@ class LocalSearchBot(Bot):
 
     def get_action(self, state: GameState) -> GameAction:
         """
-        menentukan aksi yang akan diambil bot
+        Menentukan aksi yang akan diambil bot berdasarkan state saat ini
         """
-
-        action = self.hillClimbing(state).action
+        action = self.hill_climbing_algorithm(state).action
         return action
 
-    def getNeighbor(self, node: LocalSearchNode):
+    def get_neighbor(self, node: LocalSearchNode) -> LocalSearchNode:
         """
-        mendapatkan node tetangga sesuai tipe aksi
+        Mendapatkan node tetangga sesuai tipe aksi
         """
         if (node.action is not None):
             if (node.action.action_type == "col") or (node.action.action_type == "row" and node.action.position[0] == 2 and node.action.position[1] == 3):
-                return self.getColNeighbor(node)
-        return self.getRowNeighbor(node)
+                return self.get_col_neighbor(node)
+        return self.get_row_neighbor(node)
 
-    def getRowNeighbor(self, node: LocalSearchNode):
+    def get_row_neighbor(self, node: LocalSearchNode) -> LocalSearchNode:
         """
-        mendapatkan node tetangga bertipe aksi row
+        Mendapatkan node tetangga bertipe aksi row
         """
         if node.action is None:
             x = 0
@@ -48,15 +47,14 @@ class LocalSearchBot(Bot):
                 break
             else:
                 x += 1
-
         if found:
             return LocalSearchNode(copy.deepcopy(node.state), GameAction("row", (x, y)))
         else:
-            return self.getColNeighbor(node)
+            return self.get_col_neighbor(node)
 
-    def getColNeighbor(self, node: LocalSearchNode):
+    def get_col_neighbor(self, node: LocalSearchNode) -> LocalSearchNode:
         """
-        mendapatkan node tetangga bertipe aksi col
+        Mendapatkan node tetangga bertipe aksi col
         """
         if (node.action == None or node.action.action_type == "row"):
             x = 0
@@ -65,7 +63,6 @@ class LocalSearchBot(Bot):
             x = node.action.position[0] + 1
             y = node.action.position[1]
         found = False
-
         while y < 3:
             if x >= 4:
                 x = 0
@@ -76,18 +73,17 @@ class LocalSearchBot(Bot):
                 break
             else:
                 x += 1
-
         if found:
             return LocalSearchNode(copy.deepcopy(node.state), GameAction("col", (x, y)))
         return None
 
-    def hillClimbing(self, state: GameState):
+    def hill_climbing_algorithm(self, state: GameState) -> GameState:
         """
-        Algoritma Hill Climbing
+        Algoritma Hill-Climbing
         """
         current = LocalSearchNode(state)
         while True:
-            neighbor = self.getNeighbor(current)
+            neighbor = self.get_neighbor(current)
             if neighbor is None:
                 return current
             if neighbor.value < current.value:

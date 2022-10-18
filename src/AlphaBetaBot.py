@@ -5,12 +5,17 @@ from GameState import GameState
 import numpy as np
 import time
 
+
 class AlphaBetaBot(Bot):
+    """
+    Bot untuk bermain dengan algoritma Minimax alpha-beta pruning
+    """
     global start_time
     start_time = time.time()
+
     def get_action(self, state: GameState) -> GameAction:
         """
-        menentukan aksi yang akan diambil bot
+        Menentukan aksi yang akan diambil bot berdasarkan state saat ini
         """
         global start_time
         node = AlphaBetaNode()
@@ -19,25 +24,24 @@ class AlphaBetaBot(Bot):
             np.count_nonzero(state.row_status == 1) - \
             np.count_nonzero(state.col_status == 1)
         maxNode, depth = 1, 0
-        # batasi maxNode yang dibuat sampai 4037880
         while (True):
             maxNode *= countRowAndColNotMarked
             depth += 1
             countRowAndColNotMarked -= 1
             if (maxNode > 4000000 or countRowAndColNotMarked < 0):
-                depth -=1
+                depth -= 1
                 break
         start_time = time.time()
-        moveResult = self.alphaBetaAlgorithm(
+        moveResult = self.minimax_alpha_beta_algorithm(
             node, True, depth, (0, 0), -10, 10)[0]
         if moveResult[0] % 2 == 0:
             return GameAction('row', [moveResult[1], moveResult[0]//2])
         else:
             return GameAction('col', [moveResult[1], moveResult[0]//2])
 
-    def alphaBetaAlgorithm(self, node, playerTurn, depth, move, alpha, beta):
+    def minimax_alpha_beta_algorithm(self, node: AlphaBetaNode, playerTurn: bool, depth: int, move: (int, int), alpha: int, beta: int) -> (int, int):
         """
-        algoritma alpha beta pruning
+        Algoritma Minimax dengan alpha-beta pruning
         """
         global start_time
         end_time = time.time() - start_time
@@ -48,9 +52,9 @@ class AlphaBetaBot(Bot):
             if playerTurn:  # jika true akan mencari nilai maksimum
                 bestScore = -9
                 for x, y in node.listMove:
-                    currentNode = node.copy() 
+                    currentNode = node.copy()
                     turn = currentNode.move(playerTurn, x, y)
-                    result = self.alphaBetaAlgorithm(
+                    result = self.minimax_alpha_beta_algorithm(
                         currentNode, turn, depth - 1, (x, y), alpha, beta)
                     if result[1] > bestScore:
                         bestScore = result[1]
@@ -64,7 +68,7 @@ class AlphaBetaBot(Bot):
                 for x, y in node.listMove:
                     currentNode = node.copy()
                     turn = currentNode.move(playerTurn, x, y)
-                    result = self.alphaBetaAlgorithm(
+                    result = self.minimax_alpha_beta_algorithm(
                         currentNode, not turn, depth - 1, (x, y), alpha, beta)
                     if result[1] < worstScore:
                         worstScore = result[1]
