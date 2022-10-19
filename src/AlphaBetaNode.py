@@ -21,9 +21,9 @@ class AlphaBetaNode:
         self.listMove = []
         self.score = [0, 0]
 
-    def update(self):
+    def createListMove(self):
         """
-        Menyesuaikan variabel listMove dan board dengan list move yang tersedia pada game yang sedang berlangsung
+        Menyesuaikan variabel listMove dengan list move yang tersedia pada game yang sedang berlangsung
         """
         j = 0
         for i in range(7):
@@ -31,17 +31,12 @@ class AlphaBetaNode:
                 for j in range(3):
                     if not (self.row_status[i//2][j]):
                         self.listMove.append((i, j))
-                    else:
-                        self.board[i*4 - i//2 + j] = True
             else:  # vertical
                 for j in range(4):
                     if not (self.col_status[i//2][j]):
                         self.listMove.append((i, j))
-                    else:
-                        self.board[i*4 - (i-1)//2 + j - 1] = True
                     j += 1
             j = 0
-        print(self.row_status, self.col_status)
         random.shuffle(self.listMove)
 
     def move(self, playerTurn: bool, y: int, x: int) -> bool:

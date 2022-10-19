@@ -18,7 +18,7 @@ class AlphaBetaBot(Bot):
         """
         global start_time
         node = AlphaBetaNode(state)
-        node.update()
+        node.createListMove()
         countRowAndColNotMarked = 24 - np.count_nonzero(state.row_status == 1) - np.count_nonzero(state.col_status == 1)
         maxNode, depth = 1, 0
         while (True):
