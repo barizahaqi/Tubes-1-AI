@@ -1,71 +1,71 @@
+from GameAction import GameAction
+from GameState import GameState
 import random
-
 
 class AlphaBetaNode:
     """
     Kelas untuk node pencarian Minimax alpha-beta pruning
     """
 
-    def __init__(self):
+    def __init__(self, state: GameState, action: GameAction = None):
         """
-        self.board: List[]
-            list yang berisi 24 boolean yang menandakan apakah terdapat garis pada posisi tersebut
-
         self.listMove: List[]
             list yang berisi tuple yang menandakan semua posisi move yang tersedia
 
         self.score: List[]
             list yang berisi skor pemain. score[1] untuk pemain (playerTurn), score[0] untuk musuh
         """
-        self.board = [None] * 24
+        self.state = state
+        self.row_status = state.row_status.copy()
+        self.col_status = state.col_status.copy()
         self.listMove = []
         self.score = [0, 0]
 
-    def update(self, row, col):
+    def update(self):
         """
         Menyesuaikan variabel listMove dan board dengan list move yang tersedia pada game yang sedang berlangsung
         """
         j = 0
         for i in range(7):
             if i % 2 == 0:  # horizontal
-                while (j < 3):
-                    if (row[i//2][j] == 1):
+                for j in range(3):
+                    if not (self.row_status[i//2][j]):
+                        self.listMove.append((i, j))
+                    else:
                         self.board[i*4 - i//2 + j] = True
-                    else:
-                        self.listMove.append((i, j))
-                    j += 1
             else:  # vertical
-                while (j < 4):
-                    if (col[i//2][j] == 1):
-                        self.board[i*4 - (i-1)//2 + j - 1] = True
-                    else:
+                for j in range(4):
+                    if not (self.col_status[i//2][j]):
                         self.listMove.append((i, j))
+                    else:
+                        self.board[i*4 - (i-1)//2 + j - 1] = True
                     j += 1
             j = 0
+        print(self.row_status, self.col_status)
         random.shuffle(self.listMove)
 
-    def move(self, playerTurn: bool, x: int, y: int) -> bool:
+    def move(self, playerTurn: bool, y: int, x: int) -> bool:
         """
         Menambah skor pemain serta mengembalikan true jika ada kotak yang terbentuk
         """
-        self.listMove.remove((x, y))
-        if x % 2 == 0:  # horizontal
-            self.board[x*4-x//2 + y] = True
-            if x < 6 and self.board[x*4-x//2 + y] and self.board[x*4-x//2 + y+3] and self.board[x*4-x//2 + y + 4] and self.board[(x+2)*4-x//2 + y - 1]:
+        self.listMove.remove((y, x))
+        if y % 2 == 0:  # horizontal
+            self.row_status[y//2][x] = True
+            if y < 6 and self.row_status[(y+2)//2][x] and self.col_status[(y//2)][x] and self.col_status[(y//2)][x+1]:
                 # kotak bagian atas
                 self.score[playerTurn] += 1
                 return True
-            if x > 0 and self.board[x*4-x//2 + y] and self.board[x*4-x//2 + y-3] and self.board[x*4-x//2 + y - 4] and self.board[(x-2)*4-x//2 + y + 1]:
+            if y > 0 and self.col_status[((y-2)//2)][x+1] and self.col_status[((y-2)//2)][x] and self.row_status[(y-2)//2][x]:
                 # kotak bagian bawah
                 self.score[playerTurn] += 1
                 return True
         else:  # x%2==1, vertical
-            self.board[x*4-(x-1)//2 + y - 1] = True
-            if y < 3 and self.board[x*4 - (x-1)//2 + y - 1] and self.board[x*4-(x-1)//2 + y] and self.board[x*4-(x-1)//2 + y - 4] and self.board[(x+1)*4-(x-1)//2 + y - 1]:
+            self.col_status[y//2][x] = True
+            if x < 3 and self.col_status[y//2][x+1] and self.row_status[y//2][x] and self.row_status[(y+2)//2][x]:
                 # kotak bagian kanan
                 self.score[playerTurn] += 1
                 return True
-            if y > 0 and self.board[x*4 - (x-1)//2 + y - 2] and self.board[x*4-(x-1)//2 + y-1] and self.board[x*4-(x-1)//2 + y - 5] and self.board[(x+1)*4-(x-1)//2 + y - 2]:
+            if x > 0 and self.col_status[y//2][x-1] and self.row_status[y//2][x-1] and self.row_status[(y+2)//2][x-1]:
                 # kotak bagian kiri
                 self.score[playerTurn] += 1
                 return True
@@ -75,8 +75,10 @@ class AlphaBetaNode:
         """
         Membuat copy dari objek sendiri
         """
-        newNode = AlphaBetaNode()
-        newNode.board = self.board[:]
+        newNode = AlphaBetaNode(self.state)
+        newNode.state = self.state
+        newNode.row_status = self.row_status.copy()
+        newNode.col_status = self.col_status.copy()
         newNode.listMove = self.listMove[:]
         newNode.score = self.score[:]
         return newNode
