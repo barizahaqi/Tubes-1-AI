@@ -1,12 +1,13 @@
+from GameAction import GameAction
+from GameState import GameState
 import random
-
 
 class AlphaBetaNode:
     """
     Kelas untuk node pencarian Minimax alpha-beta pruning
     """
 
-    def __init__(self):
+    def __init__(self, state: GameState, action: GameAction = None):
         """
         self.board: List[]
             list yang berisi 24 boolean yang menandakan apakah terdapat garis pada posisi tersebut
@@ -17,11 +18,15 @@ class AlphaBetaNode:
         self.score: List[]
             list yang berisi skor pemain. score[1] untuk pemain (playerTurn), score[0] untuk musuh
         """
+        self.state = state
+        self.row_status = state.row_status.copy()
+        self.col_status = state.col_status.copy()
+        self.board_status = state.board_status.copy()
         self.board = [None] * 24
         self.listMove = []
         self.score = [0, 0]
 
-    def update(self, row, col):
+    def update(self):
         """
         Menyesuaikan variabel listMove dan board dengan list move yang tersedia pada game yang sedang berlangsung
         """
@@ -29,19 +34,20 @@ class AlphaBetaNode:
         for i in range(7):
             if i % 2 == 0:  # horizontal
                 while (j < 3):
-                    if (row[i//2][j] == 1):
-                        self.board[i*4 - i//2 + j] = True
-                    else:
+                    if not (self.row_status[i//2][j]):
                         self.listMove.append((i, j))
+                    else:
+                        self.board[i*4 - i//2 + j] = True
                     j += 1
             else:  # vertical
                 while (j < 4):
-                    if (col[i//2][j] == 1):
-                        self.board[i*4 - (i-1)//2 + j - 1] = True
-                    else:
+                    if not (self.col_status[i//2][j]):
                         self.listMove.append((i, j))
+                    else:
+                        self.board[i*4 - (i-1)//2 + j - 1] = True
                     j += 1
             j = 0
+        print(self.board)
         random.shuffle(self.listMove)
 
     def move(self, playerTurn: bool, x: int, y: int) -> bool:
@@ -75,7 +81,7 @@ class AlphaBetaNode:
         """
         Membuat copy dari objek sendiri
         """
-        newNode = AlphaBetaNode()
+        newNode = AlphaBetaNode(self.state)
         newNode.board = self.board[:]
         newNode.listMove = self.listMove[:]
         newNode.score = self.score[:]

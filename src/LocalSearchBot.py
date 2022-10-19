@@ -17,6 +17,19 @@ class LocalSearchBot(Bot):
         action = self.hill_climbing_algorithm(state).action
         return action
 
+    def hill_climbing_algorithm(self, state: GameState) -> GameState:
+        """
+        Algoritma Hill-Climbing
+        """
+        current = LocalSearchNode(state)
+        while True:
+            neighbor = self.get_neighbor(current)
+            if neighbor is None:
+                return current
+            if neighbor.value < current.value:
+                return current
+            current = neighbor
+
     def get_neighbor(self, node: LocalSearchNode) -> LocalSearchNode:
         """
         Mendapatkan node tetangga sesuai tipe aksi
@@ -76,16 +89,3 @@ class LocalSearchBot(Bot):
         if found:
             return LocalSearchNode(copy.deepcopy(node.state), GameAction("col", (x, y)))
         return None
-
-    def hill_climbing_algorithm(self, state: GameState) -> GameState:
-        """
-        Algoritma Hill-Climbing
-        """
-        current = LocalSearchNode(state)
-        while True:
-            neighbor = self.get_neighbor(current)
-            if neighbor is None:
-                return current
-            if neighbor.value < current.value:
-                return current
-            current = neighbor

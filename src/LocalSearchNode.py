@@ -1,11 +1,6 @@
 from GameAction import GameAction
-
-
 from GameState import GameState
-
-
 import numpy as np
-
 
 class LocalSearchNode:
     """
@@ -38,7 +33,7 @@ class LocalSearchNode:
 
     def update(self, action: GameAction):
         """
-        Melakukan update node berdasakarn row_status dan col_status permainan saat ini
+        Melakukan update node berdasarkan row_status dan col_status permainan saat ini
         """
         x = action.position[0]
         y = action.position[1]
@@ -48,13 +43,11 @@ class LocalSearchNode:
         if action.action_type == 'row':
             self.row_status[y][x] = 1
             if y >= 1:
-                self.board_status[y -
-                                  1][x] = (abs(self.board_status[y-1][x]) + 1)
+                self.board_status[y - 1][x] = (abs(self.board_status[y-1][x]) + 1)
         elif action.action_type == 'col':
             self.col_status[y][x] = 1
             if x >= 1:
-                self.board_status[y][x -
-                                     1] = (abs(self.board_status[y][x-1]) + 1)
+                self.board_status[y][x - 1] = (abs(self.board_status[y][x-1]) + 1)
 
         self.value = self.calculate_value()
 
