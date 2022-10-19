@@ -56,7 +56,7 @@ class LocalSearchNode:
                 self.board_status[y][x -
                                      1] = (abs(self.board_status[y][x-1]) + 1)
 
-        self.value = self.calculate_value()
+        self.value = self.utility_local_search()
 
     def count_box(self):
         """
@@ -64,7 +64,7 @@ class LocalSearchNode:
         """
         return np.count_nonzero(abs(self.board_status) == 4)
 
-    def calculate_value(self) -> int:
+    def utility_local_search(self) -> int:
         """
         Menghitung nilai dari node
         """
